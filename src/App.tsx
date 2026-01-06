@@ -55,17 +55,50 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-[#050505] transition-colors duration-300">
-      <Navbar 
-        onNavigate={setCurrentPage} 
-        currentPage={currentPage} 
-        theme={theme} 
-        toggleTheme={toggleTheme} 
-      />
-      <main className="flex-grow">
-        {renderPage()}
-      </main>
-      <Footer onNavigate={setCurrentPage} />
+    <div className="min-h-screen flex flex-col relative transition-colors duration-300 overflow-x-hidden">
+      {/* GLOBAL BACKGROUND DESIGN */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        {/* Base Grid Pattern */}
+        <div 
+          className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]" 
+          style={{ 
+            backgroundImage: `linear-gradient(${theme === 'dark' ? '#00adef' : '#000'} 1px, transparent 1px), 
+                              linear-gradient(90deg, ${theme === 'dark' ? '#00adef' : '#000'} 1px, transparent 1px)`,
+            backgroundSize: '50px 50px' 
+          }}
+        />
+        
+        {/* Animated Ambient Glows */}
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-[#00adef]/10 dark:bg-[#00adef]/5 blur-[120px] animate-pulse" />
+        <div 
+          className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-blue-400/10 dark:bg-blue-900/10 blur-[150px]"
+          style={{ animation: 'pulse 8s infinite' }}
+        />
+        
+        {/* Subtle Noise Texture */}
+        <div className="absolute inset-0 opacity-[0.015] dark:opacity-[0.03] mix-blend-overlay" style={{ backgroundImage: 'url("https://grainy-gradients.vercel.app/noise.svg")' }} />
+      </div>
+
+      {/* CONTENT LAYERS */}
+      <div className="relative z-10 flex flex-col min-h-screen">
+        <Navbar 
+          onNavigate={setCurrentPage} 
+          currentPage={currentPage} 
+          theme={theme} 
+          toggleTheme={toggleTheme} 
+        />
+        <main className="flex-grow">
+          {renderPage()}
+        </main>
+        <Footer onNavigate={setCurrentPage} />
+      </div>
+
+      <style>{`
+        @keyframes pulse {
+          0%, 100% { transform: scale(1) translate(0, 0); opacity: 0.5; }
+          50% { transform: scale(1.1) translate(-2%, -2%); opacity: 0.8; }
+        }
+      `}</style>
     </div>
   );
 };

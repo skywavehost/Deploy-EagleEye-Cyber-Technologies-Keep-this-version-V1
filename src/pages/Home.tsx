@@ -7,23 +7,23 @@ const Home: React.FC<{ onNavigate: (page: string) => void, theme: 'light' | 'dar
     <div className="flex flex-col bg-white dark:bg-[#050505] transition-colors duration-300">
       {/* Hero Section */}
       <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-white dark:bg-[#050505] px-6">
-        {/* Background Network Image */}
+        {/* Background Network Image - Increased visibility for white theme */}
         <div className="absolute inset-0 z-0">
           <img 
             src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop" 
             alt="Global Network Grid"
-            className="w-full h-full object-cover opacity-5 dark:opacity-20 scale-105"
+            className="w-full h-full object-cover opacity-20 dark:opacity-25 scale-105"
           />
-          {/* Overlay layers */}
-          <div className="absolute inset-0 bg-gradient-to-b from-white dark:from-[#050505] via-white/80 dark:via-transparent to-white dark:to-[#050505] opacity-95 dark:opacity-80" />
-          <div className="absolute inset-0 bg-gradient-to-r from-white dark:from-[#050505] via-transparent to-white dark:to-[#050505] opacity-80 dark:opacity-60" />
+          {/* Overlay layers - Slightly reduced opacity to let the globe through */}
+          <div className="absolute inset-0 bg-gradient-to-b from-white dark:from-[#050505] via-white/70 dark:via-transparent to-white dark:to-[#050505] opacity-85 dark:opacity-80" />
+          <div className="absolute inset-0 bg-gradient-to-r from-white dark:from-[#050505] via-transparent to-white dark:to-[#050505] opacity-70 dark:opacity-60" />
         </div>
 
         {/* Scanning Animation Layer */}
         <ScannerAnimation theme={theme} />
         
         <div className="relative z-10 max-w-5xl mx-auto text-center pt-64 flex-grow flex flex-col justify-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#00adef]/10 border border-[#00adef]/40 text-[#00adef] text-xs font-black uppercase tracking-widest mb-8 animate-pulse shadow-[0_0_15px_rgba(0,173,239,0.1)] mx-auto">
+          <div className="inline-flex mt-24 items-center gap-2 px-4 py-2 rounded-full bg-[#00adef]/10 border border-[#00adef]/40 text-[#00adef] text-xs font-black uppercase tracking-widest mb-8 animate-pulse shadow-[0_0_15px_rgba(0,173,239,0.1)] mx-auto">
              <div className="w-1.5 h-1.5 rounded-full bg-[#00adef] animate-ping"></div>
              Mission-Critical Resilience
           </div>

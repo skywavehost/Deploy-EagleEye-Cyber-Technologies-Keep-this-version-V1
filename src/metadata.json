@@ -1,0 +1,8 @@
+{
+  "name": "EagleEye Cyber Technologies",
+  "description": "Enterprise-grade cybersecurity website.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}

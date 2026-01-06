@@ -1,0 +1,222 @@
+import React, { useState } from 'react';
+import { BLOG_POSTS } from '../constants';
+import { Search, Calendar, User, Tag, ChevronRight, ArrowLeft, Share2, Clock, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
+import { BlogPost } from '../types';
+
+const FORMSPREE_URL = 'https://formspree.io/f/mzdprzpq';
+
+const ImageWithLoader: React.FC<{ src: string; alt: string; className?: string; initialOpacity?: number }> = ({ src, alt, className = "", initialOpacity = 0.7 }) => {
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  return (
+    <img 
+      src={src} 
+      alt={alt} 
+      loading="lazy"
+      onLoad={() => setIsLoaded(true)}
+      style={{ opacity: isLoaded ? 1 : 0 }}
+      className={`${className} transition-opacity duration-1000 ease-in-out`}
+    />
+  );
+};
+
+const Resources: React.FC = () => {
+  const [activeCategory, setActiveCategory] = useState('All');
+  const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
+  
+  const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [newsletterStatus, setNewsletterStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+  
+  const categories = ['All', 'Cyber Strategy', 'Research', 'Threat Intel', 'Compliance'];
+
+  const filteredPosts = activeCategory === 'All' 
+    ? BLOG_POSTS 
+    : BLOG_POSTS.filter(post => post.category === activeCategory);
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newsletterEmail) return;
+
+    setNewsletterStatus('submitting');
+    
+    try {
+      const response = await fetch(FORMSPREE_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: newsletterEmail,
+          _subject: `New Newsletter Subscription: ${newsletterEmail}`,
+          source: 'Intelligence Digest Section'
+        }),
+      });
+
+      if (response.ok) {
+        setNewsletterStatus('success');
+        setNewsletterEmail('');
+      } else {
+        setNewsletterStatus('error');
+      }
+    } catch (error) {
+      setNewsletterStatus('error');
+    }
+  };
+
+  if (selectedPost) {
+    return (
+      <div className="pt-32 pb-40 px-6 min-h-screen bg-white dark:bg-[#050505] animate-in fade-in duration-500 transition-colors">
+        <div className="max-w-4xl mx-auto">
+          <button 
+            onClick={() => setSelectedPost(null)}
+            className="flex items-center gap-2 text-gray-400 dark:text-gray-500 hover:text-[#00adef] transition-colors mb-12 uppercase text-[10px] font-black tracking-widest"
+          >
+            <ArrowLeft size={16} /> Back to Resources
+          </button>
+
+          <div className="space-y-8 mb-12">
+            <div className="flex flex-wrap items-center gap-6 text-[#00adef] text-[10px] font-black uppercase tracking-widest">
+              <span className="px-4 py-1.5 bg-[#00adef] text-white dark:text-black rounded-sm shadow-[0_10px_20px_rgba(0,173,239,0.1)] dark:shadow-[0_0_20px_rgba(0,173,239,0.3)]">
+                {selectedPost.category}
+              </span>
+              <span className="flex items-center gap-2 text-gray-400 dark:text-gray-500"><Clock size={14} /> 6 Min Read</span>
+            </div>
+            <h1 className="text-4xl md:text-6xl font-black text-black dark:text-white leading-tight uppercase tracking-tighter">
+              {selectedPost.title}
+            </h1>
+          </div>
+
+          <div className="aspect-[16/8] w-full mb-16 border border-gray-100 dark:border-[#00adef]/20 rounded-sm overflow-hidden relative shadow-sm dark:shadow-[0_0_50px_rgba(0,0,0,0.5)] bg-gray-50 dark:bg-[#0a0a0b]">
+            <ImageWithLoader 
+              src={selectedPost.imageUrl} 
+              alt={selectedPost.title} 
+              className="w-full h-full object-cover dark:brightness-110 dark:contrast-110"
+            />
+          </div>
+
+          <div className="prose prose-slate dark:prose-invert max-w-none">
+            <div className="text-xl text-gray-500 dark:text-gray-300 font-light leading-relaxed mb-12 border-l-4 border-[#00adef] pl-8 py-2">
+              {selectedPost.excerpt}
+            </div>
+            <div className="space-y-8">
+              {selectedPost.content.split('\n\n').map((paragraph, i) => (
+                <p key={i} className="text-gray-600 dark:text-gray-400 text-lg leading-loose font-light whitespace-pre-line">
+                  {paragraph}
+                </p>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="pt-32 pb-20 px-6 min-h-screen bg-white dark:bg-[#050505] transition-colors">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex flex-col lg:flex-row justify-between items-end mb-16 gap-8">
+          <div className="max-w-3xl">
+            <h1 className="text-6xl font-black text-black dark:text-white uppercase tracking-tighter mb-6">Security Intelligence</h1>
+            <p className="text-xl text-gray-500 dark:text-gray-400 font-light leading-relaxed">
+              In-depth research and expert analysis from EagleEye Labs. Staying ahead of global threat actors.
+            </p>
+          </div>
+          <div className="flex gap-2 flex-wrap justify-end">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-sm border transition-all ${
+                  activeCategory === cat ? 'bg-[#00adef] border-[#00adef] text-white dark:text-black shadow-[0_10px_20px_rgba(0,173,239,0.1)] dark:shadow-[0_0_15px_rgba(0,173,239,0.3)]' : 'bg-transparent border-gray-200 dark:border-white/10 text-gray-400 hover:text-black dark:hover:text-white hover:border-black dark:hover:border-white'
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {filteredPosts.map((post) => (
+            <div key={post.id} className="group bg-gray-50 dark:bg-[#0a0a0b] border border-gray-100 dark:border-white/5 flex flex-col hover:border-[#00adef]/40 transition-all duration-500 h-full overflow-hidden">
+              <div className="relative h-64 overflow-hidden bg-gray-100 dark:bg-[#0a0a0b]">
+                <ImageWithLoader 
+                  src={post.imageUrl} 
+                  alt={post.title} 
+                  className="w-full h-full object-cover transition-all duration-700 opacity-90 group-hover:opacity-100 dark:group-hover:brightness-110" 
+                />
+                <div className="absolute top-4 left-4 z-10">
+                  <span className="bg-[#00adef] text-white dark:text-black text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-sm shadow-xl">
+                    {post.category}
+                  </span>
+                </div>
+              </div>
+              <div className="p-8 flex-1 flex flex-col">
+                <h3 
+                  onClick={() => setSelectedPost(post)}
+                  className="text-2xl font-bold text-black dark:text-white mb-4 leading-tight hover:text-[#00adef] transition-colors cursor-pointer uppercase tracking-tight"
+                >
+                  {post.title}
+                </h3>
+                <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-8 flex-1 font-light">
+                  {post.excerpt}
+                </p>
+                <button 
+                  onClick={() => setSelectedPost(post)}
+                  className="flex items-center gap-2 text-[#00adef] text-xs font-black uppercase tracking-widest transition-all mt-auto"
+                >
+                  Read Analysis <ChevronRight size={14} />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Newsletter / Subscription */}
+        <div className="mt-32 p-12 bg-gray-100 dark:bg-[#0a0a0b] border border-gray-200 dark:border-white/10 text-black dark:text-white flex flex-col md:flex-row items-center justify-between gap-12 rounded-sm overflow-hidden relative shadow-sm transition-colors">
+          <div className="relative z-10">
+            <h2 className="text-4xl font-black uppercase tracking-tighter mb-4">Intelligence Digest</h2>
+            <p className="font-bold opacity-70 dark:opacity-80">Get high-fidelity threat reports delivered bi-weekly.</p>
+          </div>
+          <div className="relative z-10 w-full md:w-auto">
+            {newsletterStatus === 'success' ? (
+              <div className="flex items-center gap-4 animate-in fade-in zoom-in duration-500 bg-[#00adef]/10 p-4 border border-[#00adef]/20 rounded-sm">
+                <CheckCircle className="text-[#00adef]" size={24} />
+                <span className="font-black uppercase text-xs tracking-widest text-[#00adef]">Intelligence Feed Active</span>
+              </div>
+            ) : (
+              <form className="flex flex-col gap-2" onSubmit={handleSubscribe}>
+                <div className="flex">
+                  <input 
+                    required
+                    type="email" 
+                    value={newsletterEmail}
+                    onChange={(e) => setNewsletterEmail(e.target.value)}
+                    placeholder="Enter work email"
+                    className="bg-white dark:bg-black border-b-2 border-gray-300 dark:border-[#00adef]/40 p-4 text-black dark:text-white font-bold placeholder:text-gray-400 outline-none w-full md:w-80 transition-colors"
+                  />
+                  <button 
+                    disabled={newsletterStatus === 'submitting'}
+                    className="bg-black dark:bg-[#00adef] text-white dark:text-black px-8 py-4 font-black uppercase text-xs tracking-widest hover:bg-gray-800 dark:hover:bg-[#33beff] transition shadow-xl disabled:opacity-50 flex items-center gap-2"
+                  >
+                    {newsletterStatus === 'submitting' ? (
+                      <><Loader2 size={16} className="animate-spin" /> Processing</>
+                    ) : 'Subscribe'}
+                  </button>
+                </div>
+                {newsletterStatus === 'error' && (
+                  <div className="flex items-center gap-2 text-red-700 dark:text-red-400 font-bold text-[10px] uppercase tracking-widest animate-pulse">
+                    <AlertCircle size={12} /> Transmission Error. Please retry.
+                  </div>
+                )}
+              </form>
+            )}
+          </div>
+          <div className="absolute -right-20 -top-20 text-[#00adef]/5 pointer-events-none">
+             <Tag size={400} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Resources;
